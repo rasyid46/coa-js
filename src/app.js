@@ -8,7 +8,7 @@ const router = require('koa-router')();
 const koaBody = require('koa-body');
 const jsonwebtoken = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const productRoutes = require('./routes/prodct');
+const productRoutes = require('./routes/prodctRoute');
 
 const secret = process.env.JWT_SECRET || 'jwt_secret';
 
@@ -123,30 +123,11 @@ router.post('/public/login', async(ctx, next) => {
     return;
   }
 });
-
-function getUserByUsername(username, users) {
-  let user;
-  for (let i = 0; i < users.length; i++) {
-    user = users[i];
-    if (user.username === username) {
-      return user;
-    }
-  }
-  return null;
-}
-
-/**
- * After you login and get a token you can access
- * this (and any other non public endpoint) with:
- * curl -X GET -H "Authorization: Bearer INSERT_TOKEN_HERE" http://localhost:9000/sacred
- */
-router.get('/api/v1', async(ctx) => {
-  ctx.body = 'Hello ' + ctx.state.user.data.name
-});
-
+ 
+ 
 app.use(router.routes());
 app.use(productRoutes.routes());
 
-//app.use(router.allowedMethods());
+app.use(router.allowedMethods());
 
 module.exports = app;

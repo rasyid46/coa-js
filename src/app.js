@@ -8,6 +8,7 @@ const router = require('koa-router')();
 const koaBody = require('koa-body');
 const jsonwebtoken = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const productRoutes = require('./routes/prodct');
 
 const secret = process.env.JWT_SECRET || 'jwt_secret';
 
@@ -32,11 +33,11 @@ app.use(async function (ctx, next) {
   });
 });
 
-app.use(jwt({
-  secret: secret
-}).unless({
-  path: [/^\/public/, "/"]
-}));
+// app.use(jwt({
+//  secret: secret
+// }).unless({
+//   path: [/^\/public/, "/"]
+// }));
 
 app.use(async(ctx, next) => {
   const start = Date.now();
@@ -52,6 +53,9 @@ app.use(koaBody());
 
 router.get('/', async(ctx) => {
   ctx.body = 'Hello';
+});
+router.get('/api/sule', async(ctx) => {
+  ctx.body = 'Hezzzllo';
 });
 
 /**
@@ -141,6 +145,8 @@ router.get('/api/v1', async(ctx) => {
 });
 
 app.use(router.routes());
-app.use(router.allowedMethods());
+app.use(productRoutes.routes());
+
+//app.use(router.allowedMethods());
 
 module.exports = app;

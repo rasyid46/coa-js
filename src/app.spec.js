@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 const app = require('./app');
 const server = app.listen();
 const request = require('supertest');
@@ -151,3 +151,4 @@ describe('Login example', () => {
   })
 
 })
+*/

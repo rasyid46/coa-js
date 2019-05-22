@@ -58,6 +58,13 @@ router.get('/api/sule', async(ctx) => {
   ctx.body = 'Hezzzllo';
 });
 
+router.get('/public/user', async(ctx) => {
+  var data_user = users;
+  ctx.body = {
+    "code":"200",
+    "data" : data_user
+  };
+});
 /**
  * You can register with:
  * curl -X POST --data '{"username":"thedude", "password":"abides", "email":"thedude@slacker.com", "name":"Mr. Lebowski"}' http://localhost:9000/public/register
@@ -108,10 +115,10 @@ router.post('/public/login', async(ctx, next) => {
   } = user;
   if (await bcrypt.compare(ctx.request.body.password, password)) {
     ctx.body = {
-      token: jsonwebtoken.sign({
+      token: 'Bearer '+jsonwebtoken.sign({
         data: userInfoWithoutPassword,
         //exp in seconds
-        exp: Math.floor(Date.now() / 1000) - (60 * 60) // 60 seconds * 60 minutes = 1 hour
+       // exp: Math.floor(Date.now() / 1000) - (60 * 60) // 60 seconds * 60 minutes = 1 hour
       }, secret)
     }
     next();

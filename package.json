@@ -6,11 +6,13 @@
   "dependencies": {
     "bcrypt": "latest",
     "jsonwebtoken": "latest",
+    "knex": "^0.16.5",
     "koa": "latest",
     "koa-body": "latest",
     "koa-jwt": "https://github.com/clintmod/jwt.git#v3.2.3-beta",
     "koa-logger": "latest",
-    "koa-router": "latest"
+    "koa-router": "latest",
+    "pg": "^7.11.0"
   },
   "devDependencies": {
     "chai": "latest",

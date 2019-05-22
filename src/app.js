@@ -131,7 +131,16 @@ router.post('/public/login', async(ctx, next) => {
   }
 });
  
- 
+function getUserByUsername(username, users) {
+  let user;
+  for (let i = 0; i < users.length; i++) {
+    user = users[i];
+    if (user.username === username) {
+      return user;
+    }
+  }
+  return null;
+}
 app.use(router.routes());
 app.use(productRoutes.routes());
 

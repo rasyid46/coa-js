@@ -9,11 +9,17 @@ const koaBody = require('koa-body');
 const jsonwebtoken = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const productRoutes = require('./routes/prodctRoute');
-
+const authRoutes = require('./routes/loginRoute');
 const secret = process.env.JWT_SECRET || 'jwt_secret';
 
 const app = new Koa();
-const users = [];
+const users = [{
+  "username": "user1",
+  "password": "$2a$05$3PbgZWLbAyycMxuuaUN4juV4f7nfhVVoBHOvP6FBKA9JMLweZpSri",
+  "email": "thedude@slacker.com",
+  "name": "srzzz"
+}];
+
 
 // Custom 401 handling
 app.use(async function (ctx, next) {
@@ -78,7 +84,7 @@ router.post('/public/register', async(ctx, next) => {
     return;
   }
 
-  ctx.request.body.password = await bcrypt.hash(ctx.request.body.password, 5);;
+  ctx.request.body.password = await bcrypt.hash(ctx.request.body.password, 5);
   const user = getUserByUsername(ctx.request.body.username, users);
   if (!user) {
     users.push(ctx.request.body);
@@ -154,7 +160,7 @@ router.get('/api/v1', async(ctx) => {
 
 app.use(router.routes());
 app.use(productRoutes.routes());
-
+app.use(authRoutes.routes()); 
 app.use(router.allowedMethods());
 
 module.exports = app;

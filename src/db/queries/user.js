@@ -5,6 +5,13 @@ function getAllUser() {
   .select('*');
 }
 
+function getUserByEmail(email){
+  return knex('users').where({
+    email: email 
+  })
+
+}
+
 module.exports = {
-  getAllUser
+  getAllUser,getUserByEmail
 };

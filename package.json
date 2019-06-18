@@ -20,7 +20,7 @@
     "eslint": "latest",
     "growl": "latest",
     "mocha": "latest",
-    "nodemon": "latest",
+    "nodemon": "^1.19.1",
     "should": "latest",
     "supertest": "latest"
   },

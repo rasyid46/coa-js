@@ -1,0 +1,8 @@
+migraet
+yarn knex migrate:latest 
+bikin rollback
+yarn  knex migrate:rollback
+
+yarn knex seed:make seed_name
+
+yarn knex seed:run

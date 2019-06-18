@@ -11,14 +11,15 @@ const bcrypt = require('bcrypt');
 const productRoutes = require('./routes/prodctRoute');
 const authRoutes = require('./routes/loginRoute');
 const secret = process.env.JWT_SECRET || 'jwt_secret';
-
+const queries = require('./db/queries/user');
 const app = new Koa();
+
 const users = [{
   "username": "user1",
   "password": "$2a$05$3PbgZWLbAyycMxuuaUN4juV4f7nfhVVoBHOvP6FBKA9JMLweZpSri",
   "email": "thedude@slacker.com",
   "name": "srzzz"
-}];
+}]; 
 
 
 // Custom 401 handling
@@ -58,7 +59,8 @@ if (process.env.NODE_ENV != 'test') {
 app.use(koaBody());
 
 router.get('/', async(ctx) => {
-  ctx.body = 'Hello';
+  const movies = await queries.getAllUser();
+  ctx.body = movies;
 });
 router.get('/api/sule', async(ctx) => {
   ctx.body = 'Hezzzllo';
@@ -86,6 +88,11 @@ router.post('/public/register', async(ctx, next) => {
 
   ctx.request.body.password = await bcrypt.hash(ctx.request.body.password, 5);
   const user = getUserByUsername(ctx.request.body.username, users);
+
+  console.log("Register   ");
+ 
+  console.log(ctx.request.body);
+
   if (!user) {
     users.push(ctx.request.body);
     ctx.status = 200;
@@ -146,6 +153,14 @@ function getUserByUsername(username, users) {
     }
   }
   return null;
+};
+
+function getUserByEmail(){
+   try {
+    // const movies = await queries.getAllUser();
+   } catch (error) {
+    console.log(err)
+   }
 };
 
 /**

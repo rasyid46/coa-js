@@ -15,7 +15,7 @@ module.exports = {
   },
   development: {
     client: 'pg',
-    connection: 'postgres://sandy:admin@localhost:5432/askrindo',
+    connection: 'postgres://sandy:admin@localhost:5432/koa-js',
     migrations: {
       directory: path.join(BASE_PATH, 'migrations')
     },

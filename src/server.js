@@ -2,7 +2,7 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const app = require('./app');
-
+const bodyParser = require('body-parser');
 const config = {
   port: process.env.PORT || 9000,
   env: process.env.NODE_ENV

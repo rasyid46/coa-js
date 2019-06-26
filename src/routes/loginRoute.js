@@ -16,26 +16,20 @@ router.get(BASE_URL, async (ctx) => {
       console.log(err)
     }
   });
-  
-router.get(BASE_URL+'list', async(ctx) => {
-
-  console.log('zz okoko');
-
-  
+  router.post(BASE_URL+'list', async(ctx) => {
+  console.log('list');
   console.log(ctx.request.body);
   
 try {
-  var email ='bluedot@askrindo.com';
-  var password ='admin1234!';  
-  var password2 =  ctx.request.body.password;
+  var email ='bluedot@askrindo.com'; 
+  var password2 =  ctx.request.body.password2;
   const user = await queries.getUserByEmail(email); 
   let hash = user[0].password;
   var cocok = false; 
- 
- 
-
+  console.log("data password");
+  console.log(password2,hash);
   
-  if(bcrypt.compareSync(password, hash)) {
+  if(bcrypt.compareSync(password2, hash)) {
     // Passwords match
     var cocok = true; 
    }  

@@ -116,7 +116,7 @@ describe('Login example', () => {
       .set('Authorization', 'Bearer ' + INVALID_SIGNATURE_TOKEN)
       .expect(401)
       .end(function (err, result) {
-        assert.equal(result.body.error, 'invalid signature');
+        assert.equal(result.body.error, 'ie');
         assert.equal(result.header['x-status-reason'], 'invalid signature');
         done();
       });

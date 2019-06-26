@@ -10,9 +10,10 @@ const jsonwebtoken = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const productRoutes = require('./routes/prodctRoute');
 const authRoutes = require('./routes/loginRoute');
-const secret = process.env.JWT_SECRET || 'jwt_secret';
-const queries = require('./db/queries/user');
+const secret = process.env.JWT_SECRET || 'jwt_secret123';
+const Muser = require('./db/queries/user');
 const app = new Koa();
+const saltRounds = 10;
 
 const users = [{
   "username": "user1",
@@ -40,6 +41,23 @@ app.use(async function (ctx, next) {
   });
 });
 
+
+app.use(function *(next){
+  try {
+    yield next;
+  } catch (err) {
+    if (401 == err.status) {
+      this.status = 401;
+      this.body = {
+        code : this.status,
+        descriptions : "Protected resource, use Authorization header to get access or jwt expired"  
+      }
+    } else {
+      throw err;
+    }
+  }
+});
+
 app.use(jwt({
  secret: secret
 }).unless({
@@ -58,8 +76,8 @@ if (process.env.NODE_ENV != 'test') {
 }
 app.use(koaBody());
 
-router.get('/', async(ctx) => {
-  const movies = await queries.getAllUser();
+router.get('/', async(ctx) => { 
+  const movies = await Muser.getAllUser();
   ctx.body = movies;
 });
 router.get('/api/sule', async(ctx) => {
@@ -123,16 +141,20 @@ router.post('/public/login', async(ctx, next) => {
     return;
   }
   const {
-    password,
-    ...userInfoWithoutPassword
+    password
   } = user;
   if (await bcrypt.compare(ctx.request.body.password, password)) {
+ 
+   console.log('Data User Login');
+   console.log(user);
     ctx.body = {
       token: 'Bearer '+jsonwebtoken.sign({
-        data: userInfoWithoutPassword,
+        data: user,
         //exp in seconds
        // exp: Math.floor(Date.now() / 1000) - (60 * 60) // 60 seconds * 60 minutes = 1 hour
-      }, secret)
+      },
+       secret,{expiresIn : (60*60)*12 }
+      )
     }
     next();
   } else {
@@ -144,6 +166,68 @@ router.post('/public/login', async(ctx, next) => {
   }
 });
  
+router.post('/public/loginDB', async(ctx, next) => {
+  var email =ctx.request.body.email; 
+  var password2 =  ctx.request.body.password;
+  var passhass11 = bcrypt.hashSync(password2, saltRounds);
+  const user = await Muser.getUserByEmail(email); 
+ 
+  let hash = user[0].password;
+  
+  if(bcrypt.compareSync(password2, hash)) {
+
+    var  token=  'Bearer '+jsonwebtoken.sign({
+      data: user,
+    },
+     secret,{expiresIn : (60*60)*12 }
+    );
+    user.token = token;
+    var respon = user; 
+    respon[0].token= token;
+    ctx.body = {
+      code: 200,
+      description : "ok",
+      content: respon,  
+     
+    }
+   } else {
+    ctx.status = 404;
+    ctx.body = {
+      code: 200,
+      description : "credential not found",
+    }
+  }
+});
+
+/**
+ * After you login and get a token you can access
+ * this (and any other non public endpoint) with:
+ * curl -X GET -H "Authorization: Bearer INSERT_TOKEN_HERE" http://localhost:9000/sacred
+ */
+router.get('/api/v1/DB', async(ctx) => {
+  console.log('Data user TOken '); 
+  var token_header = ctx.request.header.authorization;
+  let authorizationArr = token_header.split(' ');
+  if(authorizationArr[0] != 'Bearer'){
+    return res.status(401).send('Invalid token format');
+  }
+  let token_sec_a = authorizationArr[1];
+  try {
+    var decoded = jsonwebtoken.verify(token_sec_a, secret);
+    console.log(decoded);
+  } catch(err) {
+    console.log(err);
+  }
+
+  ctx.body = {
+    "code" : 200,
+    "description" : decoded
+  }
+});
+
+
+ 
+
 function getUserByUsername(username, users) {
   let user;
   for (let i = 0; i < users.length; i++) {
@@ -157,7 +241,7 @@ function getUserByUsername(username, users) {
 
 function getUserByEmail(){
    try {
-    // const movies = await queries.getAllUser();
+    // const movies = await Muser.getAllUser();
    } catch (error) {
     console.log(err)
    }
@@ -169,9 +253,35 @@ function getUserByEmail(){
  * curl -X GET -H "Authorization: Bearer INSERT_TOKEN_HERE" http://localhost:9000/sacred
  */
 router.get('/api/v1', async(ctx) => {
+  console.log('Data user TOken '); 
+  var token_header = ctx.request.header.authorization;
+  console.log(token_header); 
+  console.log('Sekret kode :'+secret);
+
+
+  let authorizationArr = token_header.split(' ');
+
+  if(authorizationArr[0] != 'Bearer'){
+    return res.status(401).send('Invalid token format');
+  }
+
+  let token_sec_a = authorizationArr[1];
+
+
+  try {
+    var decoded = jsonwebtoken.verify(token_sec_a, secret);
+    console.log(decoded);
+  } catch(err) {
+    console.log(err);
+  }
+ 
   ctx.body = 'Hello '  + ctx.state.user.data.name
 });
 
+router.post('/api/v1', async(ctx) => {
+  console.log(ctx.request.body);
+  ctx.body = 'HelloPO '  + ctx.state.user.data.name
+});
 
 app.use(router.routes());
 app.use(productRoutes.routes());

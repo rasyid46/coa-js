@@ -131,42 +131,42 @@ router.post('/public/register', async(ctx, next) => {
  * You can login with:
  * curl -X POST -H "Content-Type: application/json" --data '{"username":"thedude", "password":"abides"}' http://localhost:9000/public/login
  */
+// router.post('/public/login', async(ctx, next) => {
+//   let user = await getUserByUsername(ctx.request.body.username, users);
+//   if (!user) {
+//     ctx.status = 401;
+//     ctx.body = {
+//       error: "bad username"
+//     }
+//     return;
+//   }
+//   const {
+//     password
+//   } = user;
+//   if (await bcrypt.compare(ctx.request.body.password, password)) {
+ 
+//    console.log('Data User Login');
+//    console.log(user);
+//     ctx.body = {
+//       token: 'Bearer '+jsonwebtoken.sign({
+//         data: user,
+//         //exp in seconds
+//        // exp: Math.floor(Date.now() / 1000) - (60 * 60) // 60 seconds * 60 minutes = 1 hour
+//       },
+//        secret,{expiresIn : (60*60)*12 }
+//       )
+//     }
+//     next();
+//   } else {
+//     ctx.status = 401;
+//     ctx.body = {
+//       error: "bad password"
+//     }
+//     return;
+//   }
+// });
+ 
 router.post('/public/login', async(ctx, next) => {
-  let user = await getUserByUsername(ctx.request.body.username, users);
-  if (!user) {
-    ctx.status = 401;
-    ctx.body = {
-      error: "bad username"
-    }
-    return;
-  }
-  const {
-    password
-  } = user;
-  if (await bcrypt.compare(ctx.request.body.password, password)) {
- 
-   console.log('Data User Login');
-   console.log(user);
-    ctx.body = {
-      token: 'Bearer '+jsonwebtoken.sign({
-        data: user,
-        //exp in seconds
-       // exp: Math.floor(Date.now() / 1000) - (60 * 60) // 60 seconds * 60 minutes = 1 hour
-      },
-       secret,{expiresIn : (60*60)*12 }
-      )
-    }
-    next();
-  } else {
-    ctx.status = 401;
-    ctx.body = {
-      error: "bad password"
-    }
-    return;
-  }
-});
- 
-router.post('/public/loginDB', async(ctx, next) => {
   var email =ctx.request.body.email; 
   var password2 =  ctx.request.body.password;
   var passhass11 = bcrypt.hashSync(password2, saltRounds);
@@ -187,8 +187,7 @@ router.post('/public/loginDB', async(ctx, next) => {
     ctx.body = {
       code: 200,
       description : "ok",
-      content: respon,  
-     
+      content: respon[0],  
     }
    } else {
     ctx.status = 404;
@@ -214,14 +213,14 @@ router.get('/api/v1/DB', async(ctx) => {
   let token_sec_a = authorizationArr[1];
   try {
     var decoded = jsonwebtoken.verify(token_sec_a, secret);
-    console.log(decoded);
   } catch(err) {
     console.log(err);
   }
 
   ctx.body = {
     "code" : 200,
-    "description" : decoded
+    "description" : "data user",
+    "content" : decoded.data[0]
   }
 });
 
@@ -280,7 +279,11 @@ router.get('/api/v1', async(ctx) => {
 
 router.post('/api/v1', async(ctx) => {
   console.log(ctx.request.body);
-  ctx.body = 'HelloPO '  + ctx.state.user.data.name
+  ctx.body ={
+    code : 200,
+    description : "hello",
+    content :ctx.state.user.data[0]
+  }  
 });
 
 app.use(router.routes());

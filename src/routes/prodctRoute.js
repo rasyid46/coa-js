@@ -7,10 +7,11 @@ const BASE_URL = `/api/v1/product/`;
 
 router.get(BASE_URL, async (ctx) => {
     try {
-      const movies = await queries.getAllProduct();
+      const product = await queries.getAllProduct();
       ctx.body = {
-         status:"true",
-         data : movies
+         code : 200,
+         description : "Data Produk",
+         content : product
       };
     } catch (err) {
       console.log(err)
